@@ -39,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                //TODO Profile Header
+                //TODO : Profile Header
                 Align(
                   alignment: Alignment.topCenter,
                   child: Padding(
@@ -69,7 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                 ),
-                //TODO Profile Info
+                //TODO : Profile Info
                 const SizedBox(
                   height: 20,
                 ),
