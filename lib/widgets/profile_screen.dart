@@ -9,15 +9,16 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   //TODO 1 : variable
-  bool isSigned = true;
-  String fullName = "Universitas MDP";
-  String userName = "MDP";
+  bool isSigned = false;
+  String fullName = "";
+  String userName = "";
   int favouriteCandiCount = 0;
 
   //TODO 5 : fungsisign in
   void signIn() {
     setState(() {
-      isSigned = !isSigned;
+      //isSigned = !isSigned;
+      Navigator.pushNamed(context, '/signin');
     });
   }
 
@@ -31,6 +32,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Wisata Candi'),
+      ),
       body: Stack(
         children: [
           Container(

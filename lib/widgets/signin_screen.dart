@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInScreen extends StatefulWidget {
   SignInScreen({super.key});
@@ -15,10 +16,52 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   String _errorText = '';
-
   bool _isSignedIn = false;
-
   bool _obscurePassword = false;
+
+  void _signIn() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String savedUsername = prefs.getString('username') ?? '';
+    final String savedPassword = prefs.getString('password') ?? '';
+    final String enteredUsername = _usernameController.text.trim();
+    final String enteredPassword = _passwordController.text.trim();
+
+    if (enteredUsername.isEmpty || enteredPassword.isEmpty) {
+      setState(() {
+        _errorText = 'Nama pengguna dan kata sandi harus diisi.';
+      });
+      return;
+    }
+
+    if (savedUsername.isEmpty || savedPassword.isEmpty) {
+      setState(() {
+        _errorText =
+            'Pengguna belum terdaftar. Silakan daftar terlebih dahulu.';
+      });
+      return;
+    }
+
+    if (enteredUsername == savedUsername && enteredPassword == savedPassword) {
+      setState(() {
+        _errorText = '';
+        _isSignedIn = true;
+        prefs.setBool('isSignedIn', true);
+      });
+      // Pemanggilan untuk menghapus semua halaman dalam tumpukan navigasi
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      });
+      // Sign in berhasil, navigasikan ke layar utama
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacementNamed(context, '/');
+      });
+    } else {
+      setState(() {
+        _errorText = 'Nama pengguna atau kata sandi salah.';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +117,13 @@ class _SignInScreenState extends State<SignInScreen> {
                 // TextButton(
                 //     onPressed: () {},
                 //     child: Text('Belum punya akun ? Daftar di sini')),
+                ElevatedButton(
+                    onPressed: () {
+                      _signIn();
+                    },
+                    child: const Text('Sign In')),
+                // TODO: 8. Pasang TextButton Sign Up
+                const SizedBox(height: 10),
                 RichText(
                     text: TextSpan(
                         text: "Belum punya akun ? ",
@@ -86,7 +136,10 @@ class _SignInScreenState extends State<SignInScreen> {
                               color: Colors.blue,
                               decoration: TextDecoration.underline,
                               fontSize: 16),
-                          recognizer: TapGestureRecognizer()..onTap = () {})
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.pushNamed(context, '/signup');
+                            })
                     ])),
               ],
             )),
