@@ -11,9 +11,9 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   //TODO 1 : variable
-  bool isSigned = false;
-  String fullName = "";
-  String userName = "";
+  bool isSigned = true;
+  String fullName = "Universitas MDP";
+  String userName = "MDP";
   int favouriteCandiCount = 0;
 
   Future<void> _retrieveAndDecryptDataFromPrefs() async {
@@ -76,8 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //TODO 5 : fungsisign in
   void signIn() {
     setState(() {
-      //isSigned = !isSigned;
-      Navigator.pushNamed(context, '/signin');
+      isSigned = !isSigned;
     });
   }
 
