@@ -1,4 +1,6 @@
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -14,6 +16,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String userName = "";
   int favouriteCandiCount = 0;
 
+  Future<void> _retrieveAndDecryptDataFromPrefs() async {
+    final Future<SharedPreferences> prefsFuture =
+        SharedPreferences.getInstance();
+    final SharedPreferences sharedPreferences = await prefsFuture;
+
+    final encryptedUsername = sharedPreferences.getString('username') ?? '';
+    final encryptedFullname = sharedPreferences.getString('fullname') ?? '';
+    final keyString = sharedPreferences.getString('key') ?? '';
+    final ivString = sharedPreferences.getString('iv') ?? '';
+
+    final encrypt.Key key = encrypt.Key.fromBase64(keyString);
+    final iv = encrypt.IV.fromBase64(ivString);
+
+    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+
+    if (encryptedFullname != "") {
+      final decryptedUsername = encrypter.decrypt64(encryptedUsername, iv: iv);
+      final decryptedFullname = encrypter.decrypt64(encryptedFullname, iv: iv);
+
+      setState(() {
+        userName = decryptedUsername;
+        fullName = decryptedFullname;
+        isSigned = true;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _retrieveAndDecryptDataFromPrefs();
+  }
+
+  void _signOutLocalStorage() async {
+    try {
+      final Future<SharedPreferences> prefsFuture =
+          SharedPreferences.getInstance();
+
+      final SharedPreferences prefs = await prefsFuture;
+      prefs.setBool('isSignedIn', false);
+      prefs.setString('fullname', "");
+      prefs.setString('username', "");
+      prefs.setString('password', "");
+      prefs.setString('key', "");
+      prefs.setString('iv', "");
+
+      setState(() {
+        fullName = "";
+        userName = "";
+        isSigned = false;
+      });
+    } catch (e) {
+      print('An error occurred: $e');
+    }
+  }
+
   //TODO 5 : fungsisign in
   void signIn() {
     setState(() {
@@ -25,16 +84,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   //TODO 6 : fungsi sign out
   void signOut() {
     setState(() {
-      isSigned = !isSigned;
+      //isSigned = !isSigned;
+      _signOutLocalStorage();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Wisata Candi'),
-      ),
       body: Stack(
         children: [
           Container(

@@ -1,3 +1,4 @@
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -39,11 +40,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
     // print('Nama : $name');
     // print('Nama pengguna: $username');
     // print('Password : $password');
+    if (name.isNotEmpty && username.isNotEmpty && password.isNotEmpty) {
+      final encrypt.Key key = encrypt.Key.fromLength(32);
+      final iv = encrypt.IV.fromLength(16);
 
-    prefs.setString("fullname", name);
-    prefs.setString("username", username);
-    prefs.setString("password", password);
+      final encrypter = encrypt.Encrypter(encrypt.AES(key));
+      final encryptedName = encrypter.encrypt(name, iv: iv);
+      final encryptedUsername = encrypter.encrypt(username, iv: iv);
+      final encryptedPassword = encrypter.encrypt(password, iv: iv);
 
+      // Simpan data pengguna di SharedPreferences
+      prefs.setString('fullname', encryptedName.base64);
+      prefs.setString('username', encryptedUsername.base64);
+      prefs.setString('password', encryptedPassword.base64);
+      prefs.setString('key', key.base64);
+      prefs.setString('iv', iv.base64);
+    }
+
+    // Buat navigasi ke SignInScreen
     Navigator.pushReplacementNamed(context, '/signin');
   }
 
