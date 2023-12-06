@@ -19,33 +19,38 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Wisata Candi',
-        theme: ThemeData(
-            appBarTheme: const AppBarTheme(
-                iconTheme: IconThemeData(color: Colors.deepPurple),
-                titleTextStyle: TextStyle(
-                    color: Colors.deepPurple,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold)),
-            colorScheme:
-                ColorScheme.fromSeed(seedColor: Colors.deepPurple).copyWith(
-              primary: Colors.deepPurple,
-              surface: Colors.deepPurple[50],
-            ),
-            useMaterial3: true),
+      title: 'Wisata Candi',
+      theme: ThemeData(
+          appBarTheme: const AppBarTheme(
+              iconTheme: IconThemeData(color: Colors.deepPurple),
+              titleTextStyle: TextStyle(
+                  color: Colors.deepPurple,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold)),
+          colorScheme:
+              ColorScheme.fromSeed(seedColor: Colors.deepPurple).copyWith(
+            primary: Colors.deepPurple,
+            surface: Colors.deepPurple[50],
+          ),
+          useMaterial3: true),
 
-        // theme: ThemeData(
-        //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        //   useMaterial3: true,
-        // ),
-        home: SignUpScreen()
-        //MainScreen()
-        //HomeScreen()
-        //SearchScreen(),
-        //SignInScreen()
-        //ProfileScreen(),
-        //DetailScreen(candi: candiList[0]),
-        );
+      // theme: ThemeData(
+      //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      //   useMaterial3: true,
+      // ),
+      home: MainScreen(),
+      initialRoute: '/',
+      routes: {
+        '/homescreen': (context) => const HomeScreen(),
+        '/signin': (context) => SignInScreen(),
+        '/signup': (context) => const SignUpScreen()
+      },
+      //HomeScreen()
+      //SearchScreen(),
+      //SignInScreen()
+      //ProfileScreen(),
+      //DetailScreen(candi: candiList[0]),
+    );
   }
 }
 

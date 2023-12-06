@@ -1,46 +1,90 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:prj_wisatacandisi51/models/candi.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class DetailScreen extends StatelessWidget {
+class DetailScreen extends StatefulWidget {
   final Candi candi;
 
   const DetailScreen({super.key, required this.candi});
+
+  @override
+  State<DetailScreen> createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
+  bool isFavorite = false;
+  bool isSignedIn = false;
+
+  void _checkIn() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool signedIn = prefs.getBool('isSignedIn') ?? false;
+
+    setState(() {
+      isSignedIn = signedIn;
+    });
+  }
+
+  void _loadFavouriteStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool favorite = prefs.getBool('favorite_${widget.candi.name}') ?? false;
+
+    setState(() {
+      //print(favorite);
+      isFavorite = favorite;
+    });
+  }
+
+  Future<void> _toggleFavorite() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!isSignedIn) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        Navigator.pushReplacementNamed(context, "/signin");
+      });
+      return;
+    }
+
+    bool favoriteStatus = !isFavorite;
+    prefs.setBool('favorite_${widget.candi.name}', favoriteStatus);
+
+    setState(() {
+      isFavorite = favoriteStatus;
+      print(isFavorite);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset(
-                      candi.imageAsset,
-                      width: double.infinity,
-                      height: 300,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.asset(
+                        widget.candi.imageAsset,
+                        width: double.infinity,
+                        height: 300,
+                        fit: BoxFit.cover,
+                      ),
+                    )),
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.deepPurple.withOpacity(0.5),
-                      shape: BoxShape.circle,
-                    ),
+                        color: Colors.deepPurple.withOpacity(0.8),
+                        shape: BoxShape.circle),
                     child: IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.arrow_back),
-                    ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.arrow_back)),
                   ),
                 ),
               ],
@@ -50,32 +94,32 @@ class DetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 8,
-                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        candi.name,
+                        widget.candi.name,
                         style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.favorite_border),
-                      ),
+                          onPressed: () {
+                            _toggleFavorite();
+                          },
+                          icon: Icon(isSignedIn && isFavorite
+                              ? Icons.favorite
+                              : Icons.favorite_border),
+                          color: isSignedIn && isFavorite ? Colors.red : null),
                     ],
                   ),
                   const SizedBox(
-                    height: 4,
+                    height: 16,
                   ),
                   Row(
                     children: [
-                      const Icon(
-                        Icons.place,
-                        color: Colors.red,
-                      ),
+                      const Icon(Icons.place, color: Colors.red),
                       const SizedBox(
                         width: 8,
                       ),
@@ -86,15 +130,12 @@ class DetailScreen extends StatelessWidget {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Text(' : ${candi.location}')
+                      Text(': ${widget.candi.location}')
                     ],
                   ),
                   Row(
                     children: [
-                      const Icon(
-                        Icons.calendar_month,
-                        color: Colors.blue,
-                      ),
+                      const Icon(Icons.calendar_month, color: Colors.blue),
                       const SizedBox(
                         width: 8,
                       ),
@@ -105,7 +146,7 @@ class DetailScreen extends StatelessWidget {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Text(' : ${candi.built}')
+                      Text(': ${widget.candi.built}')
                     ],
                   ),
                   Row(
@@ -121,34 +162,37 @@ class DetailScreen extends StatelessWidget {
                         width: 70,
                         child: Text(
                           'Tipe',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      Text(' : ${candi.type}')
+                      Text(': ${widget.candi.type}')
                     ],
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
-                  Divider(
-                    color: Colors.purple.shade200,
-                  ),
+                  Divider(color: Colors.purple.shade200),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   const Text(
                     'Deskripsi',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
-                  Text(candi.description),
+                  Text(widget.candi.description)
                 ],
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(15),
+              padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -157,32 +201,50 @@ class DetailScreen extends StatelessWidget {
                   ),
                   const Text(
                     'Galeri',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: 10,
                   ),
                   SizedBox(
-                    height: 100,
-                    child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: candi.imageUrls.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: GestureDetector(
-                              onTap: () {},
-                              child: Container(
+                      height: 100,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: widget.candi.imageUrls.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: GestureDetector(
+                                onTap: () {},
+                                child: Container(
                                   decoration: BoxDecoration(),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
                                     child: CachedNetworkImage(
-                                        imageUrl: candi.imageUrls[index]),
-                                  )),
-                            ),
-                          );
-                        }),
+                                      imageUrl: widget.candi.imageUrls[index],
+                                      width: 120,
+                                      height: 120,
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) => Container(
+                                        width: 120,
+                                        height: 120,
+                                        color: Colors.deepPurple[50],
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Icon(Icons.error),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          })),
+                  const SizedBox(
+                    height: 4,
                   ),
+                  const Text('Tap untuk memperbesar')
                 ],
               ),
             ),
@@ -190,5 +252,13 @@ class DetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _checkIn();
+    _loadFavouriteStatus();
   }
 }

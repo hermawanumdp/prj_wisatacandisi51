@@ -10,17 +10,17 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final TextEditingController _namaController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  String _errorText = "";
+  String _errorText = '';
   bool _obscurePassword = true;
 
   void _signUp() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    final String name = _namaController.text.trim();
+    final String name = _nameController.text.trim();
     final String username = _usernameController.text.trim();
     final String password = _passwordController.text.trim();
 
@@ -31,15 +31,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
         !password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
       setState(() {
         _errorText =
-            'Minimal 8 karakter, kombinasi [A-Z] ,kombinasi [a-z] , [0-9],!@#%^&*(),.?":{}|<> ';
+            'Minimal 8 karakter, kombinasi [A-Z], [a-z], [0-9], [!@#\\\$%^&*(),.?":{}|<>]';
       });
       return;
     }
+    // print('*** Sign up berhasil!');
+    // print('Nama: $name');
+    // print('Nama Pengguna: $username');
+    // print('Password: $password');
 
-    // print('**Sign Up berhasil**');
-    // print('Nama : $name');
-    // print('Nama pengguna: $username');
-    // print('Password : $password');
     if (name.isNotEmpty && username.isNotEmpty && password.isNotEmpty) {
       final encrypt.Key key = encrypt.Key.fromLength(32);
       final iv = encrypt.IV.fromLength(16);
@@ -62,6 +62,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    _nameController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -69,14 +78,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16.0),
           child: Form(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextFormField(
-                  controller: _namaController,
+                  controller: _nameController,
                   decoration: InputDecoration(
                     labelText: "Nama",
                     border: OutlineInputBorder(),
@@ -88,7 +97,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 TextFormField(
                   controller: _usernameController,
                   decoration: InputDecoration(
-                      labelText: "Nama Pengguna", border: OutlineInputBorder()),
+                    labelText: "Nama Pengguna",
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 SizedBox(
                   height: 20,
@@ -96,10 +107,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 TextFormField(
                   controller: _passwordController,
                   decoration: InputDecoration(
-                    labelText: "Kata Sandi",
-                    border: OutlineInputBorder(),
-                    errorText: _errorText.isNotEmpty ? _errorText : null,
-                    suffixIcon: IconButton(
+                      labelText: "Kata Sandi",
+                      errorText: _errorText.isNotEmpty ? _errorText : null,
+                      border: OutlineInputBorder(),
+                      suffixIcon: IconButton(
                         onPressed: () {
                           setState(() {
                             _obscurePassword = !_obscurePassword;
@@ -107,18 +118,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         },
                         icon: Icon(_obscurePassword
                             ? Icons.visibility_off
-                            : Icons.visibility)),
-                  ),
+                            : Icons.visibility),
+                      )),
                   obscureText: _obscurePassword,
                 ),
-                const SizedBox(
+                SizedBox(
                   height: 20,
                 ),
                 ElevatedButton(
                     onPressed: () {
                       _signUp();
                     },
-                    child: const Text('Sign Up')),
+                    child: Text("Sign Up")),
               ],
             ),
           ),

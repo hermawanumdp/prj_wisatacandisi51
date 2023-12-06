@@ -13,7 +13,6 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   //TODO 1: Deklarasikan variabel
   final TextEditingController _usernameController = TextEditingController();
-
   final TextEditingController _passwordController = TextEditingController();
 
   String _errorText = '';
@@ -40,7 +39,8 @@ class _SignInScreenState extends State<SignInScreen> {
 
   void _signIn() async {
     try {
-      final Future<SharedPreferences> prefsFuture = SharedPreferences.getInstance();
+      final Future<SharedPreferences> prefsFuture =
+          SharedPreferences.getInstance();
 
       final String username = _usernameController.text;
       final String password = _passwordController.text;
@@ -106,7 +106,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       labelText: "Nama Pengguna", border: OutlineInputBorder()),
                 ),
                 // TODO 6 Pasang TextFormField Kata Sandi
-                const SizedBox(
+                SizedBox(
                   height: 20,
                 ),
                 TextFormField(
@@ -114,7 +114,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   decoration: InputDecoration(
                     labelText: "Kata Sandi",
                     errorText: _errorText.isNotEmpty ? _errorText : null,
-                    border: const OutlineInputBorder(),
+                    border: OutlineInputBorder(),
                     suffixIcon: IconButton(
                       onPressed: () {
                         setState(() {
@@ -129,7 +129,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   obscureText: _obscurePassword,
                 ),
                 //TODO 7 Pasang ElevatedButton Sign In
-                const SizedBox(
+                SizedBox(
                   height: 20,
                 ),
                 // TextButton(
@@ -145,8 +145,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 RichText(
                     text: TextSpan(
                         text: "Belum punya akun ? ",
-                        style: const TextStyle(
-                            fontSize: 16, color: Colors.deepPurple),
+                        style:
+                            TextStyle(fontSize: 16, color: Colors.deepPurple),
                         children: <TextSpan>[
                       TextSpan(
                           text: 'Daftar disini',

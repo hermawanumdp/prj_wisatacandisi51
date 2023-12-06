@@ -1,6 +1,6 @@
-import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -10,11 +10,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  //TODO 1 : variable
-  bool isSigned = true;
-  String fullName = "Universitas MDP";
-  String userName = "MDP";
-  int favouriteCandiCount = 0;
+  bool isSignedIn = false;
+  String? fullName = "";
+  String userName = "";
+  int faouriteCandiCount = 0;
 
   Future<void> _retrieveAndDecryptDataFromPrefs() async {
     final Future<SharedPreferences> prefsFuture =
@@ -38,16 +37,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         userName = decryptedUsername;
         fullName = decryptedFullname;
-        isSigned = true;
+        isSignedIn = true;
       });
     }
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _retrieveAndDecryptDataFromPrefs();
   }
 
   void _signOutLocalStorage() async {
@@ -66,26 +58,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         fullName = "";
         userName = "";
-        isSigned = false;
+        isSignedIn = false;
       });
     } catch (e) {
       print('An error occurred: $e');
     }
   }
 
-  //TODO 5 : fungsisign in
   void signIn() {
     setState(() {
-      isSigned = !isSigned;
+      Navigator.pushNamed(context, '/signin');
     });
   }
 
-  //TODO 6 : fungsi sign out
   void signOut() {
     setState(() {
-      //isSigned = !isSigned;
+      //isSignedIn = !isSignedIn;
       _signOutLocalStorage();
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _retrieveAndDecryptDataFromPrefs();
   }
 
   @override
@@ -99,41 +96,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: Colors.deepPurple,
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                //TODO 2 : Profile Header
+                //TODO : Profile Header
                 Align(
                   alignment: Alignment.topCenter,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 200 - 50),
+                    padding: const EdgeInsets.only(top: 150),
                     child: Stack(
                       alignment: Alignment.bottomRight,
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Colors.deepPurple, width: 2),
-                            shape: BoxShape.circle,
-                          ),
+                              border: Border.all(
+                                  color: Colors.deepPurple, width: 2),
+                              shape: BoxShape.circle),
                           child: const CircleAvatar(
                             radius: 50,
                             backgroundImage:
                                 AssetImage('images/placeholder_image.png'),
                           ),
                         ),
-                        if (isSigned)
+                        if (isSignedIn)
                           IconButton(
                               onPressed: () {},
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.camera_alt,
-                                color: Colors.red,
-                              ))
+                                color: Colors.deepPurple[50],
+                              )),
                       ],
                     ),
                   ),
                 ),
-                //TODO 3 : Profile Info
+                //TODO : Profile Info
                 const SizedBox(
                   height: 20,
                 ),
@@ -147,22 +143,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 3,
-                      child: const Row(
-                        children: [
-                          Icon(
-                            Icons.lock,
-                            color: Colors.amber,
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            "Pengguna",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
+                      child: const Row(children: [
+                        Icon(
+                          Icons.lock,
+                          color: Colors.amber,
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          'Pengguna',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Expanded(
                         child: Text(
@@ -172,10 +166,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 4,
                 ),
-                const Divider(
-                  color: Colors.deepPurple,
+                Divider(
+                  color: Colors.deepPurple.shade400,
                 ),
                 const SizedBox(
                   height: 4,
@@ -184,36 +178,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 3,
-                      child: const Row(
-                        children: [
-                          Icon(
-                            Icons.person,
-                            color: Colors.amber,
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            "Nama",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
+                      child: const Row(children: [
+                        Icon(
+                          Icons.person,
+                          color: Colors.amber,
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          'Nama',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Expanded(
                         child: Text(
                       ': $fullName',
                       style: const TextStyle(fontSize: 18),
                     )),
-                    if (isSigned) Icon(Icons.edit),
+                    if (isSignedIn) const Icon(Icons.edit),
                   ],
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 4,
                 ),
-                const Divider(
-                  color: Colors.deepPurple,
+                Divider(
+                  color: Colors.deepPurple.shade400,
                 ),
                 const SizedBox(
                   height: 4,
@@ -222,47 +214,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 3,
-                      child: const Row(
-                        children: [
-                          Icon(
-                            Icons.favorite,
-                            color: Colors.red,
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            "Favorit",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
+                      child: const Row(children: [
+                        Icon(
+                          Icons.favorite,
+                          color: Color.fromARGB(255, 255, 7, 28),
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          'Favorit',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ]),
                     ),
                     Expanded(
                         child: Text(
-                      ': $favouriteCandiCount',
+                      ': $faouriteCandiCount',
                       style: const TextStyle(fontSize: 18),
                     )),
                   ],
                 ),
+
                 const SizedBox(
                   height: 4,
                 ),
-                const Divider(
-                  color: Colors.deepPurple,
+                Divider(
+                  color: Colors.deepPurple.shade400,
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 4,
                 ),
-
-                //TODO 4 : Profile Action
-                isSigned
-                    ? TextButton(onPressed: signOut, child: Text('Sign Out'))
-                    : TextButton(onPressed: signIn, child: Text('Sign In'))
+                isSignedIn
+                    ? TextButton(
+                        onPressed: signOut, child: const Text("Sign Out"))
+                    : TextButton(
+                        onPressed: signIn, child: const Text("Sign In")),
               ],
             ),
-          ),
+          )
         ],
       ),
     );
